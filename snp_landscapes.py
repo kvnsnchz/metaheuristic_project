@@ -42,7 +42,9 @@ if __name__ == "__main__":
                 dim = 2, # Two sensors moving along y axis.
                 scale = w),
             make.neig(num.neighb_square,
-                scale = 0.1 * w),
+                scale = 0.1 * w,
+                domain_width = w
+                ),
             iters
         )
     sensors = [ (int(x0), int(round(sol[0]))), (int(x1), int(round(sol[1]))) ]
