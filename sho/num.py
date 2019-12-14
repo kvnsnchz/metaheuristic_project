@@ -1,3 +1,4 @@
+import math
 import numpy as np
 
 from . import pb
@@ -13,6 +14,7 @@ def to_sensors(sol):
     >>> to_sensors([0,1,2,3])
     [(0, 1), (2, 3)]
     """
+    assert(len(sol)>0)
     sensors = []
     for i in range(0,len(sol),2):
         sensors.append( ( int(round(sol[i])), int(round(sol[i+1])) ) )
@@ -21,9 +23,15 @@ def to_sensors(sol):
 
 def cover_sum(sol, domain_width, sensor_range):
     """Compute the coverage quality of the given vector."""
+    assert(0 < sensor_range <= math.sqrt(2))
+    assert(0 < domain_width)
+    assert(len(sol)>0)
     domain = np.zeros((domain_width,domain_width))
     sensors = to_sensors(sol)
-    return np.sum(pb.coverage(domain, sensors, sensor_range))
+    cov = pb.coverage(domain, sensors, sensor_range*domain_width)
+    s = np.sum(cov)
+    assert(s >= len(sensors))
+    return s
 
 
 ########################################################################
@@ -42,7 +50,6 @@ def rand(dim, scale):
 def neighb_square(sol, scale, domain_width):
     """Draw a random vector in a square of witdh `scale`
     around the given one."""
-    # TODO handle constraints
     new = sol + (np.random.random(len(sol)) * scale - scale/2)
     return new
 

@@ -1,3 +1,4 @@
+import math
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -19,7 +20,7 @@ if __name__=="__main__":
             help="Number of sensors")
 
     can.add_argument("-r", "--sensor-range", metavar="RATIO", default=0.3, type=float,
-            help="Sensors' range (as a fraction of domain width)")
+            help="Sensors' range (as a fraction of domain width, max is √2)")
 
     can.add_argument("-w", "--domain-width", metavar="NB", default=30, type=int,
             help="Domain width (a number of cells)")
@@ -48,7 +49,7 @@ if __name__=="__main__":
 
     # Minimum checks.
     assert(0 < the.nb_sensors)
-    assert(0 < the.sensor_range <= 1)
+    assert(0 < the.sensor_range <= math.sqrt(2))
     assert(0 < the.domain_width)
     assert(0 < the.iters)
 
@@ -89,7 +90,7 @@ if __name__=="__main__":
         val,sol = algo.greedy(
                 make.func(num.cover_sum,
                     domain_width = the.domain_width,
-                    sensor_range = the.sensor_range * the.domain_width),
+                    sensor_range = the.sensor_range),
                 make.init(num.rand,
                     dim = d * the.nb_sensors,
                     scale = the.domain_width),
