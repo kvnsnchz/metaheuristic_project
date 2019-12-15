@@ -1,6 +1,6 @@
 
 SHO — Stochastic Heuristics Optimization
-########################################
+========================================
 
 SHO is a didactic Python framework for implementing metaheuristics
 (or evolutionary computation, or search heuristics).
@@ -12,8 +12,10 @@ The framework implements a simple sensor placement problem
 and handle metaheuristics manipulating solutions represented as
 numerical vectors or bitstrings.
 
+Author: Johann Dreo <johann.dreo@thalesgroup.com> ⓒ Thales group
+
 Executable
-==========
+----------
 
 The main interface is implemented in `snp.py`.
 New algorithms should be integrated within this file and the interface should not be modified.
@@ -24,14 +26,14 @@ and a greedy search trajectory for a simple problem with only two dimensions.
 
 
 Architecture
-============
+------------
 
 The design pattern of the framework is a functional approach to composition.
 The goal is to be able to assemble a metaheuristic, by plugging atomic
 functions in an algorithm template.
 
-Operators
----------
+
+### Operators
 
 The base of the pattern is a function that contains the main loop
 of the algorithm, and call other functions called "operators".
@@ -40,8 +42,8 @@ Example of those algorithms are in the `algo` module.
 For instance, the `random` algorithm depends on an objective function `func`,
 an initialization operator `init` and a stopping criterion operator `again`.
 
-Encoding
---------
+
+### Encoding
 
 Some operator do not depend on the way solutions are encoded
 (like the stopping criterions) and some operators do depend on the encoding.
@@ -49,8 +51,7 @@ The former are defined in their own modules while the later are defined
 in the module corresponding to their encoding (either `num` or `bit`).
 
 
-Interface capture
------------------
+### Interface capture
 
 As they are assembled in an algorithm that do not know their internal
 in advance, an operators needs to honor an interface.
@@ -68,11 +69,11 @@ The implicit rule is to use positional arguments for mandatory parameters
 on which the operator is defined, and keyword arguments for parameters
 which are specific to the operator.
 
-Exercises
-=========
 
-Setup
------
+Exercises
+---------
+
+### Setup
 
 To setup your own solver, first copy the `snp.py` file and rename it
 with your name, for instance `dreo.py`.
@@ -87,12 +88,14 @@ The `snp.py` file shows how to assemble either a numeric greedy solver
 or a bitstring greedy solver.
 
 
-Implement a simulated annealing
--------------------------------
+### List of exercises
 
-Implement an evolutionary algorithm
------------------------------------
+Most exercises consists in adding a single function in an existing module
+(or your own module) and use assemble it in the main executable.
 
-Implement an expected run time empirical cumulative density function
-------------------------------------------------------------------
+1. Implement a simulated annealing.
+2. Implement an evolutionary algorithm.
+3. Implement an expected run time empirical cumulative density function.
+4. Implement a simple design of experiment to determine the best solver.
+5. Provide a solver for a competition.
 
