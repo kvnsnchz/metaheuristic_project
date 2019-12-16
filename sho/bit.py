@@ -63,13 +63,16 @@ def neighb_square(sol, scale, domain_width):
             # Indices order is (y,x) in order to match
             # coordinates of images (row,col).
             if sol[py][px] == 1:
-                new[py][px] = 0 # Remove original position.
                 # Add a one somewhere around.
                 w = scale//2 * domain_width
                 ny = np.random.randint(py-w,py+w)
                 nx = np.random.randint(px-w,px+w)
                 ny = min(max(0,ny),domain_width-1)
                 nx = min(max(0,nx),domain_width-1)
-                new[ny][nx] = 1
+                
+                if new[nx][ny] != 1:
+                    new[py][px] = 0 # Remove original position.
+                    new[ny][nx] = 1
+                # else pass
     return new
 
