@@ -17,7 +17,7 @@ def to_sensors(sol):
     assert(len(sol)>0)
     sensors = []
     for i in range(0,len(sol),2):
-        sensors.append( ( int(round(sol[i])), int(round(sol[i+1])) ) )
+        sensors.append( ( int(floor(sol[i])), int(floor(sol[i+1])) ) )
     return sensors
 
 
