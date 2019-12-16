@@ -21,11 +21,12 @@ def to_sensors(sol):
     return sensors
 
 
-def cover_sum(sol, domain_width, sensor_range):
+def cover_sum(sol, domain_width, sensor_range, dim):
     """Compute the coverage quality of the given vector."""
     assert(0 < sensor_range <= domain_width * math.sqrt(2))
     assert(0 < domain_width)
-    assert(len(sol)>0)
+    assert(dim > 0)
+    assert(len(sol) >= dim)
     domain = np.zeros((domain_width,domain_width))
     sensors = to_sensors(sol)
     cov = pb.coverage(domain, sensors, sensor_range*domain_width)

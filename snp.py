@@ -93,7 +93,8 @@ if __name__=="__main__":
         val,sol = algo.greedy(
                 make.func(num.cover_sum,
                     domain_width = the.domain_width,
-                    sensor_range = the.sensor_range),
+                    sensor_range = the.sensor_range,
+                    dim = d * the.nb_sensors),
                 make.init(num.rand,
                     dim = d * the.nb_sensors,
                     scale = the.domain_width),
@@ -108,7 +109,8 @@ if __name__=="__main__":
         val,sol = algo.greedy(
                 make.func(bit.cover_sum,
                     domain_width = the.domain_width,
-                    sensor_range = the.sensor_range),
+                    sensor_range = the.sensor_range,
+                    dim = d * the.nb_sensors),
                 make.init(bit.rand,
                     domain_width = the.domain_width,
                     nb_sensors = the.nb_sensors),
