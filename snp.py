@@ -1,3 +1,4 @@
+#encoding: utf-8
 import math
 import numpy as np
 import matplotlib.pyplot as plt
@@ -44,6 +45,8 @@ if __name__=="__main__":
     can.add_argument("-e", "--steady-epsilon", metavar="DVAL", default=0, type=float,
             help="Stop if the improvement of the objective function value is lesser than DVAL")
 
+    can.add_argument("-a", "--variation-scale", metavar="RATIO", default=0.3, type=float,
+            help="Scale of the variation operators (as a ration of the domain width)")
 
     the = can.parse_args()
 
@@ -95,7 +98,7 @@ if __name__=="__main__":
                     dim = d * the.nb_sensors,
                     scale = the.domain_width),
                 make.neig(num.neighb_square,
-                    scale = the.domain_width/10,
+                    scale = the.variation_scale,
                     domain_width = the.domain_width),
                 iters
             )
@@ -110,7 +113,7 @@ if __name__=="__main__":
                     domain_width = the.domain_width,
                     nb_sensors = the.nb_sensors),
                 make.neig(bit.neighb_square,
-                    scale = the.domain_width/10,
+                    scale = the.variation_scale,
                     domain_width = the.domain_width),
                 iters
             )

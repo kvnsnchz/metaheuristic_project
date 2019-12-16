@@ -55,6 +55,7 @@ def rand(domain_width, nb_sensors):
 
 def neighb_square(sol, scale, domain_width):
     """Draw a random array by moving every ones to adjacent cells."""
+    assert(0 < scale <= 1)
     # Copy, because Python pass by reference
     # and we may not want to alter the original solution.
     new = copy.copy(sol)
@@ -64,7 +65,7 @@ def neighb_square(sol, scale, domain_width):
             # coordinates of images (row,col).
             if sol[py][px] == 1:
                 # Add a one somewhere around.
-                w = scale//2 * domain_width
+                w = scale/2 * domain_width
                 ny = np.random.randint(py-w,py+w)
                 nx = np.random.randint(px-w,px+w)
                 ny = min(max(0,ny),domain_width-1)
