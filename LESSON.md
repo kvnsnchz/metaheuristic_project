@@ -1,12 +1,15 @@
 Metaheuristics (IA-308)
 =======================
 
+Compile as PDF: `pandoc -f markdown --toc -o LESSON.pdf LESSON.md`.
+
 Introduction
 ------------
 
-Metaheuristics are mathematical optimization algorithms solving `$\argmin_{x \in X} f(x)$` (or argmax).
+Metaheuristics are mathematical optimization algorithms solving $argmin_{x \in X} f(x)$ (or argmax).
 
 Synonyms:
+
 - search heuristics,
 - evolutionary algorithms,
 - stochastic local search.
@@ -53,11 +56,13 @@ Way to model a solution: encoding.
 ### Main models
 
 Encoding:
+
 - continuous (s. numeric),
 - discrete metric (integers),
 - combinatorial (graph, permutation).
 
 Fitness:
+
 - mono-objective,
 - multi-modal,
 - multi-objectives.
@@ -77,11 +82,13 @@ Performance evaluation
 ### What is performance
 
 Main performances axis:
+
 - time,
 - quality,
 - probability.
 
 Additional performance axis:
+
 - robustness,
 - stability.
 
@@ -95,6 +102,7 @@ Proof-reality gap is huge, thus empirical performance evaluation is gold standar
 Empirical evaluation = scientific method.
 
 Basic rules of thumb:
+
 - randomized algorithms => repetition of runs,
 - sensitivity to parameters => design of experiments,
 - use statistical tools,
@@ -103,11 +111,13 @@ Basic rules of thumb:
 
 ### Useful statistical tools
 
-Statistical tests.
+Statistical tests:
+
 - classical null hypothesis: test equality of distributions.
 - beware of p-value.
 
 How many runs?
+
 - not always "as many as possible",
 - maybe "as many as needed",
 - generally: 15 (min for non-parametric tests) -- 20 (min for parametric-gaussian tests).
@@ -118,12 +128,14 @@ Use robust estimators: median instead of mean, Inter Quartile Range instead of s
 ### Expected Empirical Cumulative Distribution Functions
 
 On Run Time: ERT-ECDF.
-```
-$ERTECDF(\{X_0,\dots,X_i,\dots,X_r\}, \delta, f, t) := \#\{x_t \in X_t | f(x_t^*)>=\delta \}$
-$\delta \in [0, max_{x \in \mathcal{X}}(f(x))]$
-$X_i := \{\{ x_0^0, \dots, x_i^j, \dots, x_p^u | p\in[1,\infty[ \} | u \in [0,\infty[ \} \in \mathcal{X}$
-```
-with $p$ the sample size, $r$ the number of runs, $u$ the nubmer of iterations, $t$ the number of calls to the objective
+
+$$ERTECDF(\{X_0,\dots,X_i,\dots,X_r\}, \delta, f, t) := \#\{x_t \in X_t | f(x_t^*)>=\delta \}$$
+
+$$\delta \in \left[0, \max_{x \in \mathcal{X}}(f(x))\right]$$
+
+$$X_i := \left\{\left\{ x_0^0, \dots, x_i^j, \dots, x_p^u | p\in[1,\infty[ \right\} | u \in [0,\infty[ \right\} \in \mathcal{X}$$
+
+with $p$ the sample size, $r$ the number of runs, $u$ the number of iterations, $t$ the number of calls to the objective
 function.
 
 The number of calls to the objective function is a good estimator of time because it dominates all other times.
@@ -136,6 +148,7 @@ The dual of the ERT-ECDF can be easily computed for quality (EQT-ECDF).
 ### Other tools
 
 Convergence curves: do not forget the golden rule and show distributions:
+
 - quantile boxes,
 - violin plots,
 - histograms.
@@ -146,11 +159,13 @@ Algorithm Design
 
 ### Neighborhood
 
-Convergence definition(s).
+Convergence definition(s):
+
 - strong,
 - weak.
 
 Neighborhood: subset of solutions atteinable after an atomic transformation:
+
 - ergodicity,
 - quasi-ergodicity.
 
@@ -158,17 +173,20 @@ Neighborhood: subset of solutions atteinable after an atomic transformation:
 ### Structure of problem/algorithms
 
 Structure of problems to exploit:
+
 - locality (basin of attraction),
 - separability,
 - gradient,
 - funnels.
 
 Structure with which to capture those structures:
+
 - implicit,
 - explicit,
 - direct.
 
 Silver rule: choose the algorithmic template that adhere the most to the problem model.
+
 - taking constraints into account,
 - iterate between problem/algorithm models.
 
@@ -188,12 +206,19 @@ Most generic way of thinking about algorithms: grammar-based algorithm selection
 Example: modular CMA-ES.
 
 Parameter setting tools:
+
 - ParamILS,
 - SPO,
 - i-race.
 
 Design tools:
-- ParadisEO.
+
+- ParadisEO,
+- jMetal,
+- Jenetics,
+- ECJ,
+- DEAP,
+- HeuristicLab.
 
 
 ### Landscape-aware algorithms
