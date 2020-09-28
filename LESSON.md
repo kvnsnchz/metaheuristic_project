@@ -169,6 +169,8 @@ Neighborhood: subset of solutions atteinable after an atomic transformation:
 - ergodicity,
 - quasi-ergodicity.
 
+Relationship to metric space in the continuous domain.
+
 
 ### Structure of problem/algorithms
 
