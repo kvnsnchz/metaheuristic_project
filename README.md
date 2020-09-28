@@ -59,8 +59,18 @@ For instance, the `init` operator's interface takes no input parameter
 and returns a solution to the problem.
 
 However, some operator may need additional parameters to be passed.
-To solve this problem, the framework use an interface capture pattern,
-implemented in the `make` module.
+To solve this problem, the framework use an interface capture pattern.
+
+There is two ways to capture the interface: either with a functional approach,
+either with an object-oriented approach.
+You can use the one you prefer, the advice is to use the functional approach when
+you can implement your operator as a stateless function,
+and the object-oriented approach when you need àour operator to manage a state.
+
+
+#### Function capture
+
+The functional capture helpers are implemented in the `make` module.
 Basically, a function in this module capture the operator function's full
 interface and returns a function having the expected interface of the
 operator.
@@ -68,6 +78,21 @@ operator.
 The implicit rule is to use positional arguments for mandatory parameters
 on which the operator is defined, and keyword arguments for parameters
 which are specific to the operator.
+
+
+#### Object-oriented capture
+
+The object-oriented approach does not need helpers,
+you just need to define a "functor" class,
+that is, a class which implements the `__call__` interface.
+This special function member allows to call an instance of a class
+as if it was a function.
+
+The `__call__` method should honor the targeted operator interface.
+To pass fixed parameters, use the `__init__` constructor.
+
+There is an example of an operator implemented this way
+as the `steady` class in the `sho/iters.py` file.
 
 
 Exercises
