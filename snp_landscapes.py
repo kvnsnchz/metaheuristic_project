@@ -40,9 +40,9 @@ if __name__ == "__main__":
                 fixed_x = (x0,x1) ),
             make.init(num.rand,
                 dim = 2, # Two sensors moving along y axis.
-                scale = w),
+                scale = 1.0),
             make.neig(num.neighb_square,
-                scale = 0.1 * w,
+                scale = 0.1,
                 domain_width = w
                 ),
             iters

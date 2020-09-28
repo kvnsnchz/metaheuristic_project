@@ -49,9 +49,10 @@ def rand(dim, scale):
 ########################################################################
 
 def neighb_square(sol, scale, domain_width):
-    """Draw a random vector in a square of witdh `scale`
-    around the given one."""
+    """Draw a random vector in a square of witdh `scale` in [0,1]
+    as a fraction of the domain width around the given solution."""
     assert(0 < scale <= 1)
-    new = sol + (np.random.random(len(sol)) * scale - scale/2)
+    side = domain_width * scale;
+    new = sol + (np.random.random(len(sol)) * side - side/2)
     return new
 
