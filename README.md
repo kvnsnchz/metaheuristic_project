@@ -75,10 +75,6 @@ Exercises
 
 ### Setup
 
-To setup your own solver, first copy the `snp.py` file and rename it
-with your name, for instance `dreo.py`.
-You will then add your algorithm(s) into this executable.
-
 Two example algorithms are provided: a `random` search
 and a `greedy` search.
 Several useful stopping criterions are provided.
@@ -86,6 +82,14 @@ The corresponding encoding-dependent operators are also provided,
 for both numeric and bitstring encodings.
 The `snp.py` file shows how to assemble either a numeric greedy solver
 or a bitstring greedy solver.
+
+To setup your own solver, add your algorithm(s) into the `algo.py` module,
+then assemble its instance under its name into `snp.py`.
+For instance, if you created the `annealing` algorithm,
+you will be able to immediatly assemble `num_annealing` and `bit_annealing`.
+
+One should be able to call your solvers with `python3 snp.py --solver num_annealing`,
+for instance.
 
 
 ### List of exercises
