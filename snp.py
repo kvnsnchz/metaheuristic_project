@@ -32,7 +32,7 @@ if __name__=="__main__":
     can.add_argument("-s", "--seed", metavar="VAL", default=None, type=int,
             help="Random pseudo-generator seed (none for current epoch)")
 
-    solvers = ["num_greedy","bit_greedy"]
+    solvers = ["num_greedy","bit_greedy", "num_annealing", "bit_annealing"]
     can.add_argument("-m", "--solver", metavar="NAME", choices=solvers, default="num_greedy",
             help="Solver to use, among: "+", ".join(solvers))
 
@@ -47,6 +47,15 @@ if __name__=="__main__":
 
     can.add_argument("-a", "--variation-scale", metavar="RATIO", default=0.3, type=float,
             help="Scale of the variation operators (as a ration of the domain width)")
+    
+    can.add_argument("-temp", "--temperature", metavar="DVAL", default=10.0, type=float,
+            help="Temperature for annealing")
+
+    can.add_argument("-c", "--cycles-temp", metavar="NB", default=10, type=int,
+            help="Cycles per temperature value for annealing")
+
+    can.add_argument("-alpha", "--alpha", metavar="DVAL", default=0.8, type=float,
+            help="Alpha for annealing")
 
     the = can.parse_args()
 
@@ -55,6 +64,9 @@ if __name__=="__main__":
     assert(0 < the.sensor_range <= math.sqrt(2))
     assert(0 < the.domain_width)
     assert(0 < the.iters)
+    assert(0 < the.temperature)
+    assert(0 < the.cycles_temp)
+    assert(0 < the.alpha)
 
     # Do not forget the seed option,
     # in case you would start "runs" in parallel.
@@ -118,6 +130,44 @@ if __name__=="__main__":
                     scale = the.variation_scale,
                     domain_width = the.domain_width),
                 iters
+            )
+        sensors = bit.to_sensors(sol)
+    
+    elif the.solver == "num_annealing":
+        val,sol = algo.annealing(
+                make.func(num.cover_sum,
+                    domain_width = the.domain_width,
+                    sensor_range = the.sensor_range,
+                    dim = d * the.nb_sensors),
+                make.init(num.rand,
+                    dim = d * the.nb_sensors,
+                    scale = the.domain_width),
+                make.neig(num.neighb_square,
+                    scale = the.variation_scale,
+                    domain_width = the.domain_width),
+                iters,
+                the.temperature,
+                the.cycles_temp,
+                the.alpha
+            )
+        sensors = num.to_sensors(sol)
+    
+    elif the.solver == "bit_annealing":
+        val,sol = algo.annealing(
+                make.func(bit.cover_sum,
+                    domain_width = the.domain_width,
+                    sensor_range = the.sensor_range,
+                    dim = d * the.nb_sensors),
+                make.init(bit.rand,
+                    domain_width = the.domain_width,
+                    nb_sensors = the.nb_sensors),
+                make.neig(bit.neighb_square,
+                    scale = the.variation_scale,
+                    domain_width = the.domain_width),
+                iters,
+                the.temperature,
+                the.cycles_temp,
+                the.alpha
             )
         sensors = bit.to_sensors(sol)
 
