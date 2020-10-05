@@ -24,7 +24,7 @@ if __name__=="__main__":
             help="Sensors' range (as a fraction of domain width, max is √2)")
 
     can.add_argument("-w", "--domain-width", metavar="NB", default=30, type=int,
-            help="Domain width (a number of cells)")
+            help="Domain width (a number of cells). If you change this you will probably need to update `--target` accordingly")
 
     can.add_argument("-i", "--iters", metavar="NB", default=100, type=int,
             help="Maximum number of iterations")
