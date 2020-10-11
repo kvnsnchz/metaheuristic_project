@@ -32,7 +32,7 @@ if __name__=="__main__":
     can.add_argument("-s", "--seed", metavar="VAL", default=None, type=int,
             help="Random pseudo-generator seed (none for current epoch)")
 
-    solvers = ["num_greedy","bit_greedy", "num_annealing", "bit_annealing"]
+    solvers = ["num_greedy","bit_greedy", "num_annealing", "bit_annealing", "bit_genetic"]
     can.add_argument("-m", "--solver", metavar="NAME", choices=solvers, default="num_greedy",
             help="Solver to use, among: "+", ".join(solvers))
 
@@ -168,6 +168,35 @@ if __name__=="__main__":
                 the.temperature,
                 the.cycles_temp,
                 the.alpha
+            )
+        sensors = bit.to_sensors(sol)
+
+    elif the.solver == "bit_genetic":
+        func = make.func(bit.cover_sum,
+                    domain_width = the.domain_width,
+                    sensor_range = the.sensor_range,
+                    dim = d * the.nb_sensors)
+
+        val,sol = algo.genetic(
+                func,
+                make.init(bit.rand,
+                    domain_width = the.domain_width,
+                    nb_sensors = the.nb_sensors),
+                iters,
+                make.select(bit.selection,
+                    nb_individuals = 5,
+                    nb_sensors = the.nb_sensors,
+                    func = func),
+                make.cross(bit.crossing,
+                    alpha = 1.5,
+                    nb_individuals = 4,
+                    nb_sensors = the.nb_sensors),
+                make.mutate(bit.mutation,
+                    nb_mutations = the.nb_sensors - 1,
+                    nb_sensors = the.nb_sensors),
+                make.replace(bit.eval_replacement,
+                    func = func),
+                population_size=6
             )
         sensors = bit.to_sensors(sol)
 

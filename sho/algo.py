@@ -56,4 +56,24 @@ def annealing(func, init, neighb, again, T, kmax, alpha):
     return best_val, best_sol
 
 # TODO add a population-based stochastic heuristic template.
+def genetic(func, init, again, select, cross, mutate, replace, population_size):
+    population = [init() for idx in range(population_size)]
+    selection = select(population)
+    
+    best_sol = selection[0]
+    best_val = func(best_sol)
+    i = 1
+
+    while again(i, best_val, best_sol):
+        crossing = cross(selection)
+        mutation = mutate(crossing)
+        population = replace(mutation, population)
+        
+        selection = select(population)
+        best_sol = selection[0]
+        best_val = func(best_sol)
+        i += 1
+    
+    return best_val, best_sol
+
 

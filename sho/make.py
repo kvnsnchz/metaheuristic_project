@@ -33,3 +33,22 @@ def iter(iters, **kwargs):
         return iters(i, val, sol, **kwargs)
     return f
 
+def select(selection, **kwargs):
+    def f(population):
+        return selection(population,**kwargs)
+    return f
+
+def cross(crossing, **kwargs):
+    def f(population):
+        return crossing(population,**kwargs)
+    return f
+
+def mutate(mutation, **kwargs):
+    def f(population):
+        return mutation(population,**kwargs)
+    return f
+
+def replace(replacement, **kwargs):
+    def f(new_population, old_population):
+        return replacement(new_population, old_population,**kwargs)
+    return f
