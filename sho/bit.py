@@ -72,7 +72,7 @@ def neighb_square(sol, scale, domain_width):
                 ny = min(max(0,ny),domain_width-1)
                 nx = min(max(0,nx),domain_width-1)
                 
-                if new[nx][ny] != 1:
+                if new[ny][nx] != 1:
                     new[py][px] = 0 # Remove original position.
                     new[ny][nx] = 1
                 # else pass
@@ -90,28 +90,49 @@ def selection(population, nb_individuals, nb_sensors, func):
 ########################################################################
 # Crossing
 ########################################################################
+# def crossing(population, alpha, nb_individuals, nb_sensors):
+#     assert(0 < nb_individuals)
+#     assert(0 < alpha)
+
+#     new_population = []
+#     for ind in range(nb_individuals):
+#         rand_matrix = np.random.random(population[0].shape) * alpha
+#         sum_population = np.sum(population, axis=0) + rand_matrix
+        
+#         max_val = np.sort(sum_population.reshape(-1))[:nb_sensors]
+
+#         new_solution = np.zeros_like(population[0])
+#         sensors_placed = 0
+#         for py in range(len(sum_population)):
+#             for px in range(len(sum_population[py])):
+#                 if sensors_placed == nb_sensors:
+#                     break;
+                
+#                 if sum_population[py][px] in max_val:
+#                     new_solution[py][px] = 1
+#                     sensors_placed += 1
+
+#         new_population.append(new_solution)
+
+#     return np.array(new_population)
+
 def crossing(population, alpha, nb_individuals, nb_sensors):
     assert(0 < nb_individuals)
     assert(0 < alpha)
 
+    sensor_positions = [np.argwhere(ind == 1) for ind in population]
     new_population = []
-    for ind in range(nb_individuals):
-        rand_matrix = np.random.random(population[0].shape) * alpha
-        sum_population = np.sum(population, axis=0) + rand_matrix
-        
-        max_val = np.sort(sum_population.reshape(-1))[:nb_sensors]
 
+    for idx in range(nb_individuals):
         new_solution = np.zeros_like(population[0])
-        sensors_placed = 0
-        for py in range(len(sum_population)):
-            for px in range(len(sum_population[py])):
-                if sensors_placed == nb_sensors:
-                    break;
-                
-                if sum_population[py][px] in max_val:
-                    new_solution[py][px] = 1
-                    sensors_placed += 1
-
+        for sensor in range(nb_sensors):
+            while True:
+                ind = np.random.randint(len(population))
+                sensor_position = sensor_positions[ind][sensor]
+                if new_solution[sensor_position[0]][sensor_position[1]] == 0 :
+                    break
+            new_solution[sensor_position[0]][sensor_position[1]] = 1
+       
         new_population.append(new_solution)
 
     return np.array(new_population)
@@ -124,10 +145,9 @@ def mutation(population, nb_mutations, nb_sensors):
 
     mutated_population = population.copy()
     for ind in mutated_population:
+        sensor_positions = np.argwhere(ind == 1)
+        void_positions = np.argwhere(ind == 0)
         for idx in range(nb_mutations):
-            sensor_positions = np.argwhere(ind == 1)
-            void_positions = np.argwhere(ind == 0)
-
             pos_to_mutate = sensor_positions[np.random.randint(nb_sensors)]
             ind[pos_to_mutate[0], pos_to_mutate[1]] = 0
             
@@ -141,6 +161,7 @@ def mutation(population, nb_mutations, nb_sensors):
 ########################################################################
 def eval_replacement(new_population, old_population, func):
     population = np.concatenate((new_population, old_population), axis=0)
-    
+    population = np.unique(population, axis=0)
+
     values = np.array([func(ind) for ind in population])
     return np.take(population, np.argsort(-values)[:len(old_population)], axis=0)
