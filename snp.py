@@ -89,23 +89,28 @@ if __name__=="__main__":
 
 
     # Common termination and checkpointing.
+    
     history = []
+
+    agains = [
+        make.iter(iters.max,
+            nb_it = the.iters),
+        make.iter(iters.save,
+            filename = the.solver+".csv",
+            fmt = "{it} ; {val} ; {sol}\n"),
+        make.iter(iters.history,
+            history = history),
+        make.iter(iters.target,
+            target = the.target),
+        iters.steady(the.steady_delta, the.steady_epsilon)
+    ]
+
+    if the.verbose:
+        agains.append(make.iter(iters.log, fmt="\r{it} {val}"))
+    
     iters = make.iter(
                 iters.several,
-                agains = [
-                    make.iter(iters.max,
-                        nb_it = the.iters),
-                    make.iter(iters.save,
-                        filename = the.solver+".csv",
-                        fmt = "{it} ; {val} ; {sol}\n"),
-                    make.iter(iters.log,
-                        fmt="\r{it} {val}"),
-                    make.iter(iters.history,
-                        history = history),
-                    make.iter(iters.target,
-                        target = the.target),
-                    iters.steady(the.steady_delta, the.steady_epsilon)
-                ]
+                agains = agains
             )
 
     # Erase the previous file.
@@ -119,6 +124,7 @@ if __name__=="__main__":
     metadata = {
         "best_value": 0,
         "num_calls": 0,
+        "min_calls": the.calls,
     };
 
     while the.calls > metadata["num_calls"]:
@@ -236,11 +242,11 @@ if __name__=="__main__":
                 )
             sensors = bit.to_sensors(sol)
 
-    # Fancy output.
-    print("\n{} : {}".format(val,sensors))
-    print(metadata)
-
     if(the.verbose):
+        # Fancy output.
+        print("\n{} : {}".format(val,sensors))
+        print(metadata)
+        
         shape=(the.domain_width, the.domain_width)
 
         fig = plt.figure()

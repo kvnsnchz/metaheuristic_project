@@ -66,12 +66,13 @@ def line(x0, y0, x1, y1):
 
 def save(sol, func, metadata, filename="calls.csv", **kwargs):
     value = func(sol,**kwargs)
-        
-    with open(filename, "a") as file:
-        if value > metadata["best_value"]:
-            metadata["best_value"] = value
 
-        file.write(str(metadata["best_value"]) + "\n")
+    if value > metadata["best_value"]:
+            metadata["best_value"] = value
+    
+    if metadata["min_calls"] > metadata["num_calls"]:
+        with open(filename, "a") as file:    
+            file.write(str(metadata["best_value"]) + "\n")
     
     metadata["num_calls"] += 1
     return value
