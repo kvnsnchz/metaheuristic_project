@@ -54,5 +54,6 @@ def neighb_square(sol, scale, domain_width):
     assert(0 < scale <= 1)
     side = domain_width * scale;
     new = sol + (np.random.random(len(sol)) * side - side/2)
+    new = [min(max(pos, 0), domain_width - 1) for pos in new]
     return new
 
