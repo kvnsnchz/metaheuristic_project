@@ -84,58 +84,60 @@ def neighb_square(sol, scale, domain_width):
 def selection(population, nb_individuals, nb_sensors, func):
     assert(0 < nb_individuals < len(population))
     
-    values = np.array([func(ind) for ind in population])
-    return np.take(population, np.argsort(-values)[:nb_individuals], axis=0);
+    evaluation(population, func)
+    return np.take(population, np.argsort(-population[:,1])[:nb_individuals], axis=0);
 
 ########################################################################
 # Crossing
 ########################################################################
-# def crossing(population, alpha, nb_individuals, nb_sensors):
-#     assert(0 < nb_individuals)
-#     assert(0 < alpha)
+def get_new_value_from(a, b):
+    n = a    
+    if a > b:
+        n = np.random.randint(b, a)
+    elif a < b:
+        n = np.random.randint(a, b)
+    return n
 
-#     new_population = []
-#     for ind in range(nb_individuals):
-#         rand_matrix = np.random.random(population[0].shape) * alpha
-#         sum_population = np.sum(population, axis=0) + rand_matrix
-        
-#         max_val = np.sort(sum_population.reshape(-1))[:nb_sensors]
-
-#         new_solution = np.zeros_like(population[0])
-#         sensors_placed = 0
-#         for py in range(len(sum_population)):
-#             for px in range(len(sum_population[py])):
-#                 if sensors_placed == nb_sensors:
-#                     break;
-                
-#                 if sum_population[py][px] in max_val:
-#                     new_solution[py][px] = 1
-#                     sensors_placed += 1
-
-#         new_population.append(new_solution)
-
-#     return np.array(new_population)
-
-def crossing(population, alpha, nb_individuals, nb_sensors):
+def crossing(population, nb_individuals, nb_sensors):
     assert(0 < nb_individuals)
-    assert(0 < alpha)
-
-    sensor_positions = [np.argwhere(ind == 1) for ind in population]
+    #sensor_positions = [np.argwhere(ind == 1) for ind in population[:, 0]]
+    sensors = [to_sensors(ind) for ind in population[:, 0]]
     new_population = []
+    population_size = len(population)
+    
+    for idx_i in range(population_size - 1):
+        for idx_j in range(idx_i + 1, population_size):
+            new_solution = np.zeros_like(population[0,0])
+            for sensor_idx in range(nb_sensors):
+                s_ix = sensors[idx_i][sensor_idx][0]
+                s_jx = sensors[idx_j][sensor_idx][0]
+                nx = get_new_value_from(s_ix, s_jx)
 
-    for idx in range(nb_individuals):
-        new_solution = np.zeros_like(population[0])
-        for sensor in range(nb_sensors):
-            while True:
-                ind = np.random.randint(len(population))
-                sensor_position = sensor_positions[ind][sensor]
-                if new_solution[sensor_position[0]][sensor_position[1]] == 0 :
-                    break
-            new_solution[sensor_position[0]][sensor_position[1]] = 1
-       
-        new_population.append(new_solution)
+                s_iy = sensors[idx_i][sensor_idx][1]
+                s_jy = sensors[idx_j][sensor_idx][1]
+                ny = get_new_value_from(s_iy, s_jy)
 
+                new_solution[nx][ny] = 1
+
+            new_population.append([new_solution, None])
+            if len(new_population) == nb_individuals:
+                return np.array(new_population)
+    
     return np.array(new_population)
+    
+    # for idx in range(nb_individuals):
+    #     new_solution = np.zeros_like(population[0,0])
+    #     for sensor in range(nb_sensors):
+    #         while True:
+    #             ind = np.random.randint(len(population))
+    #             sensor_position = sensor_positions[ind][sensor]
+    #             if new_solution[sensor_position[0]][sensor_position[1]] == 0 :
+    #                 break
+    #         new_solution[sensor_position[0]][sensor_position[1]] = 1
+       
+    #     new_population.append([new_solution, None])
+
+    # return np.array(new_population)
 
 ########################################################################
 # Mutation
@@ -145,23 +147,31 @@ def mutation(population, nb_mutations, nb_sensors):
 
     mutated_population = population.copy()
     for ind in mutated_population:
-        sensor_positions = np.argwhere(ind == 1)
-        void_positions = np.argwhere(ind == 0)
+        sensor_positions = np.argwhere(ind[0] == 1).tolist()
+        void_positions = np.argwhere(ind[0] == 0).tolist()
+        
         for idx in range(nb_mutations):
-            pos_to_mutate = sensor_positions[np.random.randint(nb_sensors)]
-            ind[pos_to_mutate[0], pos_to_mutate[1]] = 0
-            
-            pos_to_mutate = void_positions[np.random.randint(len(void_positions))]
-            ind[pos_to_mutate[0], pos_to_mutate[1]] = 1
+            pos_to_mutate = sensor_positions.pop(np.random.randint(len(sensor_positions)))
+            ind[0][pos_to_mutate[0], pos_to_mutate[1]] = 0
+
+            pos_to_mutate = void_positions.pop(np.random.randint(len(void_positions)))
+            ind[0][pos_to_mutate[0], pos_to_mutate[1]] = 1
 
     return mutated_population
 
 ########################################################################
-# Evaluation and Replacement
+# Evaluation
 ########################################################################
-def eval_replacement(new_population, old_population, func):
-    population = np.concatenate((new_population, old_population), axis=0)
-    population = np.unique(population, axis=0)
+def evaluation(population, func):
+    for ind in population:
+        if(ind[1] == None):
+            ind[1] = func(ind[0])
 
-    values = np.array([func(ind) for ind in population])
-    return np.take(population, np.argsort(-values)[:len(old_population)], axis=0)
+########################################################################
+# Replacement
+########################################################################
+def replacement(new_population, old_population, func):
+    population = np.concatenate((new_population, old_population), axis=0)
+    #population = np.unique(population, axis=0)
+
+    return np.take(population, np.argsort(-population[:,1])[:len(old_population)], axis=0)

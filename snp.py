@@ -230,15 +230,16 @@ if __name__=="__main__":
                         nb_sensors = the.nb_sensors,
                         func = func),
                     make.cross(bit.crossing,
-                        alpha = 1.5,
-                        nb_individuals = 4,
+                        nb_individuals = 8,
                         nb_sensors = the.nb_sensors),
                     make.mutate(bit.mutation,
-                        nb_mutations = the.nb_sensors - 1,
+                        nb_mutations = 1,
                         nb_sensors = the.nb_sensors),
-                    make.replace(bit.eval_replacement,
+                    make.evaluate(bit.evaluation,
                         func = func),
-                    population_size=6
+                    make.replace(bit.replacement,
+                        func = func),
+                    population_size=10
                 )
             sensors = bit.to_sensors(sol)
 

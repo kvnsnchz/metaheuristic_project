@@ -48,6 +48,11 @@ def mutate(mutation, **kwargs):
         return mutation(population,**kwargs)
     return f
 
+def evaluate(evaluation, **kwargs):
+    def f(population):
+        return evaluation(population, **kwargs)
+    return f
+
 def replace(replacement, **kwargs):
     def f(new_population, old_population):
         return replacement(new_population, old_population,**kwargs)
