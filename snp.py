@@ -50,22 +50,39 @@ if __name__=="__main__":
             help="Scale of the variation operators (as a ration of the domain width)")
     
     can.add_argument("-v", "--verbose", metavar="NB", default=1, type=int,
-            help="Alpha for annealing")
+            help="Show prints and graphics")
     
     can.add_argument("-f", "--filename", metavar="NAME", default="ert/calls.csv",
             help="Filename with calls to the target function")
 
-    can.add_argument("-C", "--calls", metavar="NB", default=100, type=int,
+    can.add_argument("-C", "--calls", metavar="NB", default=10, type=int,
             help="Minimum number of calls to the target function")
 
-    can.add_argument("-temp", "--temperature", metavar="DVAL", default=10.0, type=float,
-            help="Temperature for annealing")
+    can.add_argument("-T", "--temperature", metavar="VAL", default=100.0, type=float,
+            help="Temperature - simulated annealing")
 
-    can.add_argument("-c", "--cycles-temp", metavar="NB", default=10, type=int,
-            help="Cycles per temperature value for annealing")
+    can.add_argument("-c", "--max-cycles-temp", metavar="NB", default=10, type=int,
+            help="Maximum cycles per temperature value - simulated annealing")
 
-    can.add_argument("-alpha", "--alpha", metavar="DVAL", default=0.8, type=float,
-            help="Alpha for annealing")
+    can.add_argument("-A", "--alpha", metavar="VAL", default=0.95, type=float,
+            help="Alpha for the temperature decrease - simulated annealing")
+
+    can.add_argument("-E", "--epsilon", metavar="VAL", default=1, type=float,
+            help="Epsilon (minimum temperature) - simulated annealing")
+
+    can.add_argument("-S", "--nb-selection", metavar="NB", default=5, type=int,
+            help="Number of selections - genetic algorithm")
+    
+    can.add_argument("-R", "--nb-crossing", metavar="NB", default=8, type=int,
+            help="Number of crosses - genetic algorithm")
+
+    can.add_argument("-M", "--nb-mutation", metavar="NB", default=1, type=int,
+            help="Number of mutation - genetic algorithm")
+    
+    can.add_argument("-p", "--population-size", metavar="NB", default=10, type=int,
+            help="Population size - genetic algorithm")
+
+    
     
 
     the = can.parse_args()
@@ -77,8 +94,13 @@ if __name__=="__main__":
     assert(0 < the.iters)
     assert(0 < the.calls)
     assert(0 < the.temperature)
-    assert(0 < the.cycles_temp)
+    assert(0 < the.max_cycles_temp)
     assert(0 < the.alpha)
+    assert(0.1 < the.epsilon)
+    assert(0 < the.population_size)
+    assert(0 < the.nb_selection < the.population_size)
+    assert(0 < the.nb_crossing)
+    assert(0 < the.nb_mutation < the.nb_sensors)
 
     # Do not forget the seed option,
     # in case you would start "runs" in parallel.
@@ -183,8 +205,9 @@ if __name__=="__main__":
                         domain_width = the.domain_width),
                     iters,
                     the.temperature,
-                    the.cycles_temp,
-                    the.alpha
+                    the.max_cycles_temp,
+                    the.alpha,
+                    the.epsilon
                 )
             sensors = num.to_sensors(sol)
         
@@ -205,8 +228,9 @@ if __name__=="__main__":
                         domain_width = the.domain_width),
                     iters,
                     the.temperature,
-                    the.cycles_temp,
-                    the.alpha
+                    the.max_cycles_temp,
+                    the.alpha,
+                    the.epsilon
                 )
             sensors = bit.to_sensors(sol)
         
@@ -226,21 +250,20 @@ if __name__=="__main__":
                         scale = the.domain_width),
                     iters,
                     make.select(num.selection,
-                        nb_individuals = 5,
-                        nb_sensors = the.nb_sensors,
-                        func = func),
+                        nb_individuals = the.nb_selection,
+                        nb_sensors = the.nb_sensors),
                     make.cross(num.crossing,
-                        nb_individuals = 8,
+                        nb_individuals = the.nb_crossing,
                         nb_sensors = the.nb_sensors),
                     make.mutate(num.mutation,
-                        nb_mutations = 1,
+                        nb_mutations = the.nb_mutation,
                         nb_sensors = the.nb_sensors,
                         domain_width = the.domain_width),
                     make.evaluate(num.evaluation,
                         func = func),
                     make.replace(num.replacement,
                         func = func),
-                    population_size=10
+                    population_size=the.population_size
                 )
             sensors = num.to_sensors(sol)
 
@@ -260,20 +283,19 @@ if __name__=="__main__":
                         nb_sensors = the.nb_sensors),
                     iters,
                     make.select(bit.selection,
-                        nb_individuals = 5,
-                        nb_sensors = the.nb_sensors,
-                        func = func),
+                        nb_individuals = the.nb_selection,
+                        nb_sensors = the.nb_sensors),
                     make.cross(bit.crossing,
-                        nb_individuals = 8,
+                        nb_individuals = the.nb_crossing,
                         nb_sensors = the.nb_sensors),
                     make.mutate(bit.mutation,
-                        nb_mutations = 1,
+                        nb_mutations = the.nb_mutation,
                         nb_sensors = the.nb_sensors),
                     make.evaluate(bit.evaluation,
                         func = func),
                     make.replace(bit.replacement,
                         func = func),
-                    population_size=10
+                    population_size=the.population_size
                 )
             sensors = bit.to_sensors(sol)
 

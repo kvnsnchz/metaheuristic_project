@@ -36,29 +36,33 @@ def greedy(func, init, neighb, again):
     return best_val, best_sol
 
 # TODO add a simulated-annealing template.
-def annealing(func, init, neighb, again, T, kmax, alpha):
+def annealing(func, init, neighb, again, temp, max_cycles_temp, alpha, epsilon):
     best_sol = init()
     best_val = func(best_sol)
     val,sol = best_val,best_sol
     i = 1
 
     while again(i, best_val, best_sol):
-        for k in range(kmax):
+        for cycle in range(max_cycles_temp):
             sol = neighb(best_sol)
             val = func(sol)
-
-            if val >= best_val or (np.exp((best_val - val) / T) > np.random.rand(1)[0] and val > best_val):
+        
+            if val >= best_val or (np.exp((val - best_val) / temp) > np.random.rand(1)[0] and val < best_val):
                 best_val = val
                 best_sol = sol
+                break
          
         i += 1
-        T *= alpha
+        temp *= alpha
+        if temp < epsilon:
+            break
     return best_val, best_sol
 
 # TODO add a population-based stochastic heuristic template.
 def genetic(func, init, again, select, cross, mutate, evaluate, replace, population_size):
     # population = [[sol_1, val_1], [sol_2, val_2], ...]
     population = np.array([[init(), None] for idx in range(population_size)])
+    evaluate(population)
     selection = select(population)
     
     best_sol = selection[0, 0]

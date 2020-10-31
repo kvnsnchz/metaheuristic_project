@@ -60,10 +60,9 @@ def neighb_square(sol, scale, domain_width):
 ########################################################################
 # Selection
 ########################################################################
-def selection(population, nb_individuals, nb_sensors, func):
+def selection(population, nb_individuals, nb_sensors):
     assert(0 < nb_individuals < len(population))
     
-    evaluation(population, func)
     return np.take(population, np.argsort(-population[:,1])[:nb_individuals], axis=0);
 
 ########################################################################
