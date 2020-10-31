@@ -33,7 +33,7 @@ if __name__=="__main__":
     can.add_argument("-s", "--seed", metavar="VAL", default=None, type=int,
             help="Random pseudo-generator seed (none for current epoch)")
 
-    solvers = ["num_greedy","bit_greedy", "num_annealing", "bit_annealing", "bit_genetic"]
+    solvers = ["num_greedy","bit_greedy", "num_annealing", "bit_annealing", "num_genetic", "bit_genetic"]
     can.add_argument("-m", "--solver", metavar="NAME", choices=solvers, default="num_greedy",
             help="Solver to use, among: "+", ".join(solvers))
 
@@ -209,6 +209,40 @@ if __name__=="__main__":
                     the.alpha
                 )
             sensors = bit.to_sensors(sol)
+        
+        elif the.solver == "num_genetic":
+            func = make.func(pb.save,
+                        func = num.cover_sum,
+                        metadata = metadata,
+                        filename = the.filename,
+                        domain_width = the.domain_width,
+                        sensor_range = the.sensor_range,
+                        dim = d * the.nb_sensors)
+
+            val,sol = algo.genetic(
+                    func,
+                    make.init(num.rand,
+                        dim = d * the.nb_sensors,
+                        scale = the.domain_width),
+                    iters,
+                    make.select(num.selection,
+                        nb_individuals = 5,
+                        nb_sensors = the.nb_sensors,
+                        func = func),
+                    make.cross(num.crossing,
+                        nb_individuals = 8,
+                        nb_sensors = the.nb_sensors),
+                    make.mutate(num.mutation,
+                        nb_mutations = 1,
+                        nb_sensors = the.nb_sensors,
+                        domain_width = the.domain_width),
+                    make.evaluate(num.evaluation,
+                        func = func),
+                    make.replace(num.replacement,
+                        func = func),
+                    population_size=10
+                )
+            sensors = num.to_sensors(sol)
 
         elif the.solver == "bit_genetic":
             func = make.func(pb.save,

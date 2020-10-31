@@ -57,3 +57,82 @@ def neighb_square(sol, scale, domain_width):
     new = [min(max(pos, 0), domain_width - 1) for pos in new]
     return new
 
+########################################################################
+# Selection
+########################################################################
+def selection(population, nb_individuals, nb_sensors, func):
+    assert(0 < nb_individuals < len(population))
+    
+    evaluation(population, func)
+    return np.take(population, np.argsort(-population[:,1])[:nb_individuals], axis=0);
+
+########################################################################
+# Crossing
+########################################################################
+def get_new_value_from(a, b):
+    n = a    
+    if a > b:
+        n = np.random.randint(b, a)
+    elif a < b:
+        n = np.random.randint(a, b)
+    return n
+
+def crossing(population, nb_individuals, nb_sensors):
+    assert(0 < nb_individuals)
+    #sensor_positions = [np.argwhere(ind == 1) for ind in population[:, 0]]
+    sensors = [to_sensors(ind) for ind in population[:, 0]]
+    new_population = []
+    population_size = len(population)
+    
+    for idx_i in range(population_size - 1):
+        for idx_j in range(idx_i + 1, population_size):
+            new_solution = []
+            for sensor_idx in range(nb_sensors):
+                s_ix = sensors[idx_i][sensor_idx][0]
+                s_jx = sensors[idx_j][sensor_idx][0]
+                nx = get_new_value_from(s_ix, s_jx)
+
+                s_iy = sensors[idx_i][sensor_idx][1]
+                s_jy = sensors[idx_j][sensor_idx][1]
+                ny = get_new_value_from(s_iy, s_jy)
+
+                new_solution.append(nx)
+                new_solution.append(ny)
+
+            new_population.append([new_solution, None])
+            if len(new_population) == nb_individuals:
+                return np.array(new_population)
+    
+    return np.array(new_population)
+
+########################################################################
+# Mutation
+########################################################################
+def mutation(population, nb_mutations, nb_sensors, domain_width):
+    assert(0 < nb_mutations <= nb_sensors)
+
+    mutated_population = population.copy()
+    for sensors in mutated_population:
+        for idx in range(nb_mutations):
+            pos = np.random.randint(nb_sensors);
+            sensors[0][2*pos] = np.random.uniform(0, domain_width) 
+            sensors[0][2*pos +1] = np.random.uniform(0, domain_width) 
+    
+    return mutated_population
+
+########################################################################
+# Evaluation
+########################################################################
+def evaluation(population, func):
+    for ind in population:
+        if(ind[1] == None):
+            ind[1] = func(ind[0])
+
+########################################################################
+# Replacement
+########################################################################
+def replacement(new_population, old_population, func):
+    population = np.concatenate((new_population, old_population), axis=0)
+    #population = np.unique(population, axis=0)
+
+    return np.take(population, np.argsort(-population[:,1])[:len(old_population)], axis=0)
