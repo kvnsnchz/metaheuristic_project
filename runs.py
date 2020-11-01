@@ -5,7 +5,7 @@ import os
 import subprocess
 import multiprocessing
 import shutil
-from algo_types import types as algo_types
+import experiment
 from itertools import product
 
 # Constants
@@ -66,11 +66,11 @@ if __name__=="__main__":
         "-v", str(VERBOSE),
         "-I", INITIALIZER,
         "-R", str(INIT_RADIUS),
-        "-C", the.calls,
+        "-C", str(the.calls),
     ]
 
     # Solvers
-    solvers = algo_types()
+    solvers = experiment.algoritms
     
     with multiprocessing.Pool(the.processes) as pool:
         pool.map(check_dir, solvers)

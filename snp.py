@@ -40,7 +40,7 @@ if __name__=="__main__":
     initializer = ["init_rand", "init_circle"]
     can.add_argument("-I", "--initializer", metavar="NAME", choices=initializer, default="rand",
             help="Initializer to use, among: "+", ".join(initializer))
-            
+
     can.add_argument("-R", "--init-radius", metavar="VAL", default=10, type=int,
             help="radius for initialization algorithm - init_circle")
 
@@ -86,7 +86,7 @@ if __name__=="__main__":
     can.add_argument("-M", "--nb-mutation", metavar="NB", default=1, type=int,
             help="Number of mutation - genetic algorithm")
     
-    can.add_argument("-p", "--population-size", metavar="NB", default=10, type=int,
+    can.add_argument("-p", "--population-size", metavar="NB", default=15, type=int,
             help="Population size - genetic algorithm")
     
 
@@ -126,9 +126,6 @@ if __name__=="__main__":
     agains = [
         make.iter(iters.max,
             nb_it = the.iters),
-        make.iter(iters.save,
-            filename = the.solver+".csv",
-            fmt = "{it} ; {val} ; {sol}\n"),
         make.iter(iters.history,
             history = history),
         make.iter(iters.target,
@@ -137,6 +134,10 @@ if __name__=="__main__":
     ]
 
     if the.verbose:
+        agains.append(make.iter(iters.save, 
+            filename = the.solver+".csv",
+            fmt = "{it} ; {val} ; {sol}\n")
+        )
         agains.append(make.iter(iters.log, fmt="\r{it} {val}"))
     
     iters = make.iter(
@@ -145,8 +146,9 @@ if __name__=="__main__":
             )
 
     # Erase the previous file.
-    with open(the.solver+".csv", 'w') as fd:
-        fd.write("# {} {}\n".format(the.solver,the.domain_width))
+    if the.verbose:
+        with open(the.solver+".csv", 'w') as fd:
+            fd.write("# {} {}\n".format(the.solver,the.domain_width))
 
     if os.path.exists(the.filename):
         os.remove(the.filename)
