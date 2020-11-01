@@ -18,6 +18,8 @@ STEADY_DELTA = 50
 STEADY_EPSILON = 50
 VARIATION_SCALE = 0.3
 VERBOSE = 0
+INITIALIZER = "init_circle"
+INIT_RADIUS = 10
 
 
 def check_dir(solver):
@@ -42,7 +44,7 @@ if __name__=="__main__":
     can.add_argument("-nr", "--nb-runs", metavar="NR", default=4, type=int,
             help="Number of algorithm executions")
     
-    can.add_argument("-C", "--calls", metavar="NR", default=200, type=int,
+    can.add_argument("-C", "--calls", metavar="NR", default=1000, type=int,
             help="Minimum number of calls to the target function")
     
     # Here, None = os.cpu_count() 
@@ -62,6 +64,8 @@ if __name__=="__main__":
         "-e", str(STEADY_EPSILON),
         "-a", str(VARIATION_SCALE),
         "-v", str(VERBOSE),
+        "-I", INITIALIZER,
+        "-R", str(INIT_RADIUS),
     ]
 
     # Solvers

@@ -37,6 +37,13 @@ if __name__=="__main__":
     can.add_argument("-m", "--solver", metavar="NAME", choices=solvers, default="num_greedy",
             help="Solver to use, among: "+", ".join(solvers))
 
+    initializer = ["init_rand", "init_circle"]
+    can.add_argument("-I", "--initializer", metavar="NAME", choices=initializer, default="rand",
+            help="Initializer to use, among: "+", ".join(initializer))
+            
+    can.add_argument("-R", "--init-radius", metavar="VAL", default=10, type=int,
+            help="radius for initialization algorithm - init_circle")
+
     can.add_argument("-t", "--target", metavar="VAL", default=30*30, type=float,
             help="Objective function value target")
 
@@ -73,7 +80,7 @@ if __name__=="__main__":
     can.add_argument("-S", "--nb-selection", metavar="NB", default=5, type=int,
             help="Number of selections - genetic algorithm")
     
-    can.add_argument("-R", "--nb-crossing", metavar="NB", default=8, type=int,
+    can.add_argument("-x", "--nb-crossing", metavar="NB", default=8, type=int,
             help="Number of crosses - genetic algorithm")
 
     can.add_argument("-M", "--nb-mutation", metavar="NB", default=1, type=int,
@@ -81,6 +88,7 @@ if __name__=="__main__":
     
     can.add_argument("-p", "--population-size", metavar="NB", default=10, type=int,
             help="Population size - genetic algorithm")
+    
 
     
     
@@ -101,6 +109,7 @@ if __name__=="__main__":
     assert(0 < the.nb_selection < the.population_size)
     assert(0 < the.nb_crossing)
     assert(0 < the.nb_mutation < the.nb_sensors)
+    assert(0 < the.init_radius < the.domain_width/2)
 
     # Do not forget the seed option,
     # in case you would start "runs" in parallel.
@@ -149,6 +158,30 @@ if __name__=="__main__":
         "min_calls": the.calls,
     };
 
+    if the.initializer == 'init_rand':
+        if  the.solver[:3] == 'num':
+            init = make.init(num.rand,
+                    dim = d * the.nb_sensors,
+                    scale = the.domain_width)
+        else:
+            init = make.init(bit.rand,
+                    domain_width = the.domain_width,
+                    nb_sensors = the.nb_sensors)
+    else:
+        if  the.solver[:3] == 'num':
+            init = make.init(num.init_circle,
+                    dim = d * the.nb_sensors,
+                    scale = the.domain_width,
+                    domain_width = the.domain_width,
+                    nb_sensors = the.nb_sensors,
+                    radius = the.init_radius)
+        else:
+            init = make.init(bit.init_circle,
+                    domain_width = the.domain_width,
+                    nb_sensors = the.nb_sensors,
+                    radius = the.init_radius)
+
+
     while the.calls > metadata["num_calls"]:
         if the.solver == "num_greedy":
             val,sol = algo.greedy(
@@ -159,9 +192,7 @@ if __name__=="__main__":
                         domain_width = the.domain_width,
                         sensor_range = the.sensor_range,
                         dim = d * the.nb_sensors),
-                    make.init(num.rand,
-                        dim = d * the.nb_sensors,
-                        scale = the.domain_width),
+                    init,
                     make.neig(num.neighb_square,
                         scale = the.variation_scale,
                         domain_width = the.domain_width),
@@ -178,9 +209,7 @@ if __name__=="__main__":
                         domain_width = the.domain_width,
                         sensor_range = the.sensor_range,
                         dim = d * the.nb_sensors),
-                    make.init(bit.rand,
-                        domain_width = the.domain_width,
-                        nb_sensors = the.nb_sensors),
+                    init,
                     make.neig(bit.neighb_square,
                         scale = the.variation_scale,
                         domain_width = the.domain_width),
@@ -197,9 +226,7 @@ if __name__=="__main__":
                         domain_width = the.domain_width,
                         sensor_range = the.sensor_range,
                         dim = d * the.nb_sensors),
-                    make.init(num.rand,
-                        dim = d * the.nb_sensors,
-                        scale = the.domain_width),
+                    init,
                     make.neig(num.neighb_square,
                         scale = the.variation_scale,
                         domain_width = the.domain_width),
@@ -220,9 +247,7 @@ if __name__=="__main__":
                         domain_width = the.domain_width,
                         sensor_range = the.sensor_range,
                         dim = d * the.nb_sensors),
-                    make.init(bit.rand,
-                        domain_width = the.domain_width,
-                        nb_sensors = the.nb_sensors),
+                    init,
                     make.neig(bit.neighb_square,
                         scale = the.variation_scale,
                         domain_width = the.domain_width),
@@ -245,9 +270,7 @@ if __name__=="__main__":
 
             val,sol = algo.genetic(
                     func,
-                    make.init(num.rand,
-                        dim = d * the.nb_sensors,
-                        scale = the.domain_width),
+                    init,
                     iters,
                     make.select(num.selection,
                         nb_individuals = the.nb_selection,
@@ -278,15 +301,14 @@ if __name__=="__main__":
 
             val,sol = algo.genetic(
                     func,
-                    make.init(bit.rand,
-                        domain_width = the.domain_width,
-                        nb_sensors = the.nb_sensors),
+                    init,
                     iters,
                     make.select(bit.selection,
                         nb_individuals = the.nb_selection,
                         nb_sensors = the.nb_sensors),
                     make.cross(bit.crossing,
                         nb_individuals = the.nb_crossing,
+                        domain_width = the.domain_width,
                         nb_sensors = the.nb_sensors),
                     make.mutate(bit.mutation,
                         nb_mutations = the.nb_mutation,

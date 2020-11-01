@@ -43,6 +43,20 @@ def rand(dim, scale):
     """Draw a random vector in [0,scale]**dim."""
     return np.random.random(dim) * scale
 
+def circle(radius, center, pos):
+     return radius*np.cos(pos) + center, radius*np.sin(pos) + center
+
+def init_circle(dim, scale, domain_width, nb_sensors, radius):
+    assert(0 < radius < domain_width/2)
+
+    domain = np.zeros(dim)
+    div = np.ceil(nb_sensors/2)
+    for idx in range(nb_sensors):
+        x,y = circle(radius, domain_width/2, idx*np.pi/div)
+        domain[2*idx] = y
+        domain[2*idx + 1] = x
+    
+    return domain
 
 ########################################################################
 # Neighborhood
@@ -71,15 +85,15 @@ def selection(population, nb_individuals, nb_sensors):
 def get_new_value_from(a, b):
     n = a    
     if a > b:
-        n = np.random.randint(b, a)
+        n = np.random.uniform(b, a)
     elif a < b:
-        n = np.random.randint(a, b)
+        n = np.random.uniform(a, b)
     return n
 
 def crossing(population, nb_individuals, nb_sensors):
     assert(0 < nb_individuals)
     #sensor_positions = [np.argwhere(ind == 1) for ind in population[:, 0]]
-    sensors = [to_sensors(ind) for ind in population[:, 0]]
+    sensors = [ind for ind in population[:, 0]]
     new_population = []
     population_size = len(population)
     
@@ -87,16 +101,16 @@ def crossing(population, nb_individuals, nb_sensors):
         for idx_j in range(idx_i + 1, population_size):
             new_solution = []
             for sensor_idx in range(nb_sensors):
-                s_ix = sensors[idx_i][sensor_idx][0]
-                s_jx = sensors[idx_j][sensor_idx][0]
-                nx = get_new_value_from(s_ix, s_jx)
-
-                s_iy = sensors[idx_i][sensor_idx][1]
-                s_jy = sensors[idx_j][sensor_idx][1]
+                s_iy = sensors[idx_i][2*sensor_idx]
+                s_jy = sensors[idx_j][2*sensor_idx]
                 ny = get_new_value_from(s_iy, s_jy)
 
-                new_solution.append(nx)
+                s_ix = sensors[idx_i][2*sensor_idx + 1]
+                s_jx = sensors[idx_j][2*sensor_idx + 1]
+                nx = get_new_value_from(s_ix, s_jx)
+
                 new_solution.append(ny)
+                new_solution.append(nx)
 
             new_population.append([new_solution, None])
             if len(new_population) == nb_individuals:
@@ -115,7 +129,7 @@ def mutation(population, nb_mutations, nb_sensors, domain_width):
         for idx in range(nb_mutations):
             pos = np.random.randint(nb_sensors);
             sensors[0][2*pos] = np.random.uniform(0, domain_width) 
-            sensors[0][2*pos +1] = np.random.uniform(0, domain_width) 
+            sensors[0][2*pos + 1] = np.random.uniform(0, domain_width) 
     
     return mutated_population
 

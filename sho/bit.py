@@ -13,7 +13,7 @@ def cover_sum(sol, domain_width, sensor_range, dim):
     assert(0 < sensor_range <= math.sqrt(2))
     assert(0 < domain_width)
     assert(dim > 0)
-    assert(len(sol) >= dim)
+    #assert(len(sol) >= dim)
     domain = np.zeros((domain_width,domain_width))
     sensors = to_sensors(sol)
     cov = pb.coverage(domain, sensors, sensor_range*domain_width)
@@ -46,9 +46,25 @@ def rand(domain_width, nb_sensors):
     """"Draw a random domain containing nb_sensors ones."""
     domain = np.zeros( (domain_width,domain_width) )
     for x,y in np.random.randint(0, domain_width, (nb_sensors, 2)):
+        while domain[y][x] == 1:
+            x,y = np.random.randint(0, domain_width, 2)
         domain[y][x] = 1
+    
     return domain
 
+def circle(radius, center, pos):
+     return int(radius*np.cos(pos) + center), int(radius*np.sin(pos) + center)
+
+def init_circle(domain_width, nb_sensors, radius):
+    assert(0 < radius < domain_width/2)
+
+    domain = np.zeros( (domain_width,domain_width) )
+    div = np.ceil(nb_sensors/2)
+    for idx in range(nb_sensors):
+        x,y = circle(radius, domain_width/2, idx*np.pi/div)
+        domain[y][x] = 1
+    
+    return domain
 
 ########################################################################
 # Neighborhood
@@ -83,7 +99,7 @@ def neighb_square(sol, scale, domain_width):
 ########################################################################
 def selection(population, nb_individuals, nb_sensors):
     assert(0 < nb_individuals < len(population))
-
+    #print(f"size: {len(to_sensors(population[0,0]))}")
     return np.take(population, np.argsort(-population[:,1])[:nb_individuals], axis=0);
 
 ########################################################################
@@ -97,7 +113,7 @@ def get_new_value_from(a, b):
         n = np.random.randint(a, b)
     return n
 
-def crossing(population, nb_individuals, nb_sensors):
+def crossing(population, nb_individuals, domain_width, nb_sensors):
     assert(0 < nb_individuals)
     #sensor_positions = [np.argwhere(ind == 1) for ind in population[:, 0]]
     sensors = [to_sensors(ind) for ind in population[:, 0]]
@@ -107,36 +123,27 @@ def crossing(population, nb_individuals, nb_sensors):
     for idx_i in range(population_size - 1):
         for idx_j in range(idx_i + 1, population_size):
             new_solution = np.zeros_like(population[0,0])
+            #print(f"\n{len(sensors[idx_j])}")
             for sensor_idx in range(nb_sensors):
-                s_ix = sensors[idx_i][sensor_idx][0]
-                s_jx = sensors[idx_j][sensor_idx][0]
-                nx = get_new_value_from(s_ix, s_jx)
-
-                s_iy = sensors[idx_i][sensor_idx][1]
-                s_jy = sensors[idx_j][sensor_idx][1]
+                s_iy = sensors[idx_i][sensor_idx][0]
+                #print(f"{idx_j}, {sensor_idx} : {len(sensors)}, {len(sensors[idx_j])}, {sensors[idx_j]}")
+                s_jy = sensors[idx_j][sensor_idx][0]
                 ny = get_new_value_from(s_iy, s_jy)
 
-                new_solution[nx][ny] = 1
+                s_ix = sensors[idx_i][sensor_idx][1]
+                s_jx = sensors[idx_j][sensor_idx][1]
+                nx = get_new_value_from(s_ix, s_jx)
+                    
+                while new_solution[ny][nx] == 1:
+                    ny,nx = np.random.randint(0, domain_width, 2)
+
+                new_solution[ny][nx] = 1
 
             new_population.append([new_solution, None])
             if len(new_population) == nb_individuals:
                 return np.array(new_population)
     
     return np.array(new_population)
-    
-    # for idx in range(nb_individuals):
-    #     new_solution = np.zeros_like(population[0,0])
-    #     for sensor in range(nb_sensors):
-    #         while True:
-    #             ind = np.random.randint(len(population))
-    #             sensor_position = sensor_positions[ind][sensor]
-    #             if new_solution[sensor_position[0]][sensor_position[1]] == 0 :
-    #                 break
-    #         new_solution[sensor_position[0]][sensor_position[1]] = 1
-       
-    #     new_population.append([new_solution, None])
-
-    # return np.array(new_population)
 
 ########################################################################
 # Mutation
