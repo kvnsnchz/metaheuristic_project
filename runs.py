@@ -9,10 +9,10 @@ from algo_types import types as algo_types
 from itertools import product
 
 # Constants
-NB_SENSORS = 3
-SENSOR_RANGE = 0.3
+NB_SENSORS = 15
+SENSOR_RANGE = 0.15
 DOMAIN_WITH = 30
-ITERS = 100
+ITERS = 200
 TARGET = DOMAIN_WITH * DOMAIN_WITH
 STEADY_DELTA = 50
 STEADY_EPSILON = 50
@@ -66,6 +66,7 @@ if __name__=="__main__":
         "-v", str(VERBOSE),
         "-I", INITIALIZER,
         "-R", str(INIT_RADIUS),
+        "-C", the.calls,
     ]
 
     # Solvers
