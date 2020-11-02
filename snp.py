@@ -18,10 +18,10 @@ if __name__=="__main__":
 
     can = argparse.ArgumentParser()
 
-    can.add_argument("-n", "--nb-sensors", metavar="NB", default=3, type=int,
+    can.add_argument("-n", "--nb-sensors", metavar="NB", default=15, type=int,
             help="Number of sensors")
 
-    can.add_argument("-r", "--sensor-range", metavar="RATIO", default=0.3, type=float,
+    can.add_argument("-r", "--sensor-range", metavar="RATIO", default=0.15, type=float,
             help="Sensors' range (as a fraction of domain width, max is √2)")
 
     can.add_argument("-w", "--domain-width", metavar="NB", default=30, type=int,
@@ -34,11 +34,11 @@ if __name__=="__main__":
             help="Random pseudo-generator seed (none for current epoch)")
 
     solvers = ["num_greedy","bit_greedy", "num_annealing", "bit_annealing", "num_genetic", "bit_genetic"]
-    can.add_argument("-m", "--solver", metavar="NAME", choices=solvers, default="num_greedy",
+    can.add_argument("-m", "--solver", metavar="NAME", choices=solvers, default="num_genetic",
             help="Solver to use, among: "+", ".join(solvers))
 
     initializer = ["init_rand", "init_circle"]
-    can.add_argument("-I", "--initializer", metavar="NAME", choices=initializer, default="rand",
+    can.add_argument("-I", "--initializer", metavar="NAME", choices=initializer, default="init_circle",
             help="Initializer to use, among: "+", ".join(initializer))
 
     can.add_argument("-R", "--init-radius", metavar="VAL", default=10, type=int,
@@ -86,11 +86,8 @@ if __name__=="__main__":
     can.add_argument("-M", "--nb-mutation", metavar="NB", default=1, type=int,
             help="Number of mutation - genetic algorithm")
     
-    can.add_argument("-p", "--population-size", metavar="NB", default=15, type=int,
+    can.add_argument("-p", "--population-size", metavar="NB", default=10, type=int,
             help="Population size - genetic algorithm")
-    
-
-    
     
 
     the = can.parse_args()

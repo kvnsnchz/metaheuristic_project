@@ -35,7 +35,7 @@ def check_dir(solver):
 def run(solver, command, idx):
     print(f"Solver: {solver['name']} run: {idx+1} ...")
     filename = f"ert/{solver['name']}/run_{idx}.csv"
-    subprocess.run(command + solver['args'] + ["-f", filename, "-s", str(os.getpid() * time.time())])
+    subprocess.run(command + solver['args'] + ["-f", filename, "-s", str(int(time.time() + os.getpid()*10))])
 
 if __name__=="__main__":
 
@@ -53,6 +53,9 @@ if __name__=="__main__":
             help="Number of parallel processes.")
 
     the = can.parse_args()
+
+    assert(0 < the.nb_runs)
+    assert(0 < the.calls)
 
     command = ["python3",
         "snp.py",
