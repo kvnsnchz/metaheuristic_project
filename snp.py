@@ -274,7 +274,7 @@ if __name__=="__main__":
                     func,
                     init,
                     iters,
-                    make.select(num.selection,
+                    make.select(pb.selection,
                         nb_individuals = the.nb_selection,
                         nb_sensors = the.nb_sensors),
                     make.cross(num.crossing,
@@ -284,9 +284,9 @@ if __name__=="__main__":
                         nb_mutations = the.nb_mutation,
                         nb_sensors = the.nb_sensors,
                         domain_width = the.domain_width),
-                    make.evaluate(num.evaluation,
+                    make.evaluate(pb.evaluation,
                         func = func),
-                    make.replace(num.replacement,
+                    make.replace(pb.replacement,
                         func = func),
                     population_size=the.population_size
                 )
@@ -305,7 +305,7 @@ if __name__=="__main__":
                     func,
                     init,
                     iters,
-                    make.select(bit.selection,
+                    make.select(pb.selection,
                         nb_individuals = the.nb_selection,
                         nb_sensors = the.nb_sensors),
                     make.cross(bit.crossing,
@@ -315,9 +315,9 @@ if __name__=="__main__":
                     make.mutate(bit.mutation,
                         nb_mutations = the.nb_mutation,
                         nb_sensors = the.nb_sensors),
-                    make.evaluate(bit.evaluation,
+                    make.evaluate(pb.evaluation,
                         func = func),
-                    make.replace(bit.replacement,
+                    make.replace(pb.replacement,
                         func = func),
                     population_size=the.population_size
                 )

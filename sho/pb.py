@@ -1,4 +1,5 @@
 from . import distance
+import numpy as np
 
 ########################################################################
 # Objective functions
@@ -64,6 +65,10 @@ def line(x0, y0, x1, y1):
 
     D += 2 * dy
 
+########################################################################
+# General Wrapper Objective Functions
+########################################################################
+
 def save(sol, func, metadata, filename="calls.csv", **kwargs):
     value = func(sol,**kwargs)
 
@@ -76,3 +81,26 @@ def save(sol, func, metadata, filename="calls.csv", **kwargs):
     
     metadata["num_calls"] += 1
     return value
+
+########################################################################
+# Selection - Genetic algorithm
+########################################################################
+def selection(population, nb_individuals, nb_sensors):
+    assert(0 < nb_individuals < len(population))
+    
+    return np.take(population, np.argsort(-population[:,1])[:nb_individuals], axis=0);
+
+########################################################################
+# Evaluation - Genetic algorithm
+########################################################################
+def evaluation(population, func):
+    for ind in population:
+        if(ind[1] == None):
+            ind[1] = func(ind[0])
+
+########################################################################
+# Replacement - Genetic algorithm
+########################################################################
+def replacement(new_population, old_population, func):
+    population = np.concatenate((new_population, old_population), axis=0)
+    return np.take(population, np.argsort(-population[:,1])[:len(old_population)], axis=0)

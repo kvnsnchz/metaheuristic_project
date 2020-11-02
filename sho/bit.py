@@ -60,8 +60,10 @@ def init_circle(domain_width, nb_sensors, radius):
 
     domain = np.zeros( (domain_width,domain_width) )
     div = np.ceil(nb_sensors/2)
+    shift = np.random.uniform(0, np.pi)
+    
     for idx in range(nb_sensors):
-        x,y = circle(radius, domain_width/2, idx*np.pi/div)
+        x,y = circle(radius, domain_width/2, idx*np.pi/div + shift)
         domain[y][x] = 1
     
     return domain
@@ -93,14 +95,6 @@ def neighb_square(sol, scale, domain_width):
                     new[ny][nx] = 1
                 # else pass
     return new
-
-########################################################################
-# Selection
-########################################################################
-def selection(population, nb_individuals, nb_sensors):
-    assert(0 < nb_individuals < len(population))
-    #print(f"size: {len(to_sensors(population[0,0]))}")
-    return np.take(population, np.argsort(-population[:,1])[:nb_individuals], axis=0);
 
 ########################################################################
 # Crossing
@@ -164,20 +158,3 @@ def mutation(population, nb_mutations, nb_sensors):
             ind[0][pos_to_mutate[0], pos_to_mutate[1]] = 1
 
     return mutated_population
-
-########################################################################
-# Evaluation
-########################################################################
-def evaluation(population, func):
-    for ind in population:
-        if(ind[1] == None):
-            ind[1] = func(ind[0])
-
-########################################################################
-# Replacement
-########################################################################
-def replacement(new_population, old_population, func):
-    population = np.concatenate((new_population, old_population), axis=0)
-    #population = np.unique(population, axis=0)
-
-    return np.take(population, np.argsort(-population[:,1])[:len(old_population)], axis=0)

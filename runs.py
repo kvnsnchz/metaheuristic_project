@@ -6,6 +6,7 @@ import subprocess
 import multiprocessing
 import shutil
 import experiment
+import time
 from itertools import product
 
 # Constants
@@ -34,14 +35,14 @@ def check_dir(solver):
 def run(solver, command, idx):
     print(f"Solver: {solver['name']} run: {idx+1} ...")
     filename = f"ert/{solver['name']}/run_{idx}.csv"
-    subprocess.run(command + solver['args'] + ["-f", filename])
+    subprocess.run(command + solver['args'] + ["-f", filename, "-s", str(os.getpid() * time.time())])
 
 if __name__=="__main__":
 
     # Arguments
     can = argparse.ArgumentParser()
 
-    can.add_argument("-nr", "--nb-runs", metavar="NR", default=4, type=int,
+    can.add_argument("-nr", "--nb-runs", metavar="NR", default=50, type=int,
             help="Number of algorithm executions")
     
     can.add_argument("-C", "--calls", metavar="NR", default=1000, type=int,
