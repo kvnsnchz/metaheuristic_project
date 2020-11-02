@@ -39,9 +39,6 @@ def plot_semifinal_comparison(solvers, algoritms, deltas):
                 ratio = runs.apply(lambda values: np.mean(np.where(values >= delta, 1, 0)), axis=1)
                 # Plotting runs
                 axs[idx].plot(runs.index + 1, ratio, drawstyle='steps', label=algoritm['name'])
-            
-
-        
 
         for idx, ax in enumerate(axs):
             ax.set_ylim(0 - 1e-2, 1 + 1e-2)
@@ -93,7 +90,7 @@ def plot_final_comparison(solvers, algoritms, deltas):
         ax.set_xlabel("Number of calls to the objective function")
         ax.set_ylabel(f"Ratio of obj. func. values that reach $\delta$")
         ax.legend(loc='upper left', prop={'size': 6})
-        ax.set_title(f"ERT-ECDF {nb_runs} runs - {solver} - $\delta$ = {deltas[idx]}")
+        ax.set_title(f"ERT-ECDF {nb_runs} runs - $\delta$ = {deltas[idx]}")
         
     plt.show()
 
